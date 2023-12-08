@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 import axios from "axios";
+import badPhoto from "../components/image/badPhoto/vuesax/bold/close-circle.png";
+import goodPhoto from "../components/image/GoodPhoto/vuesax/bold/tick-circle.png";
 // import anh1 from "../../ver2/components/image/anhlogin1.png";
 // import anh2 from "../../ver2/components/image/anhlogin2.png";
 // import anh3 from "../../ver2/components/image/anhlogin3.png";
@@ -10,6 +12,7 @@ import axios from "axios";
 // import anh5 from "../../ver2/components/image/anhlogin5.png";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { IoCloseCircle } from "react-icons/io5";
 
 export default function Register() {
   const [user_name, usernamechange] = useState("");
@@ -35,6 +38,13 @@ export default function Register() {
   };
   const openModals = () => {
     setShowModal(true);
+    window.document.querySelector(".back_left").style.backgroundColor =
+      "#000000";
+  };
+  const closeModals = () => {
+    setShowModal(false);
+    window.document.querySelector(".back_left").style.backgroundColor =
+      "#D9D9D9";
   };
 
   const server = "https://metatechvn.store";
@@ -93,9 +103,9 @@ export default function Register() {
         const response = await axios.post(`${server}/register/user`, formData);
 
         console.log(response.data);
-        if (response.data.account) {
-          navigate("/");
+        if (response.data.account) {         
           toast.success(response.data.message);
+          navigate("/login");
         } else {
           toast.error(response.data.message);
         }
@@ -108,24 +118,46 @@ export default function Register() {
     }
   };
   const handleImage = async (e) => {
-    setImageSrc(e.target.files[0]);
-    setImageName(e.target.files[0].name);
+    // setImageSrc(e.target.files[0]);
+    // setImageName(e.target.files[0].name);
+    const selectedFile = e.target.files[0];
+    console.log(selectedFile);
+    console.log(selectedFile.name);
+    if (selectedFile && selectedFile.name) {
+      setImageName(selectedFile.name);
+      setImageSrc(`https://i.ibb.co/vjVvZL5/${imageName}`);
+      console.log(imageName);
+      console.log(imageSrc);
+    } else {
+      console.error("Invalid file selection");
+      // Thực hiện xử lý khi không có file hợp lệ được chọn
+    }
   };
-  const uploadImg = async (e) => {
+  const uploadImg = async (imageSrc) => {
     try {
-      var formData = new FormData();
-      formData.append("image", imageSrc);
       const apiKey = "dc602cd2409c2f9f06d21dc9f6b26502";
-      let body = new FormData();
-      body.set("key", apiKey);
-      body.append("image", imageSrc);
 
-      await axios({
+      // Create a FormData object
+      const formData = new FormData();
+
+      // Assuming 'imageSrc' is a File or Blob object, append it to the formData
+      formData.append("image", imageSrc);
+
+      // Append the API key to the formData
+      formData.append("key", apiKey);
+
+      // Make the POST request using axios
+      const response = await axios({
         method: "post",
         url: "https://api.imgbb.com/1/upload",
-        data: body,
+        data: formData,
       });
+
+      // Handle the response here if needed
+      console.log(response.data);
     } catch (error) {
+      // Handle errors
+      console.error("Error uploading image:", error);
       throw new Error(error);
     }
   };
@@ -146,12 +178,12 @@ export default function Register() {
     <>
       <div>
         <div className="h-screen   slab lg:flex lg:items-center">
-          <div className="w-[60%] h-[100%] lg:block hidden bg-[#D9D9D9]"></div>
+          <div className="w-[60%] h-[100%] lg:block hidden bg-[#D9D9D9] back_left"></div>
 
           <div className="w-[40%] h-[100%] absolute right-0 top-0">
             <div className="bg-black flex flex-col w-[100%] h-[100%] z-30 opacity-75 ">
               <form className="" onSubmit={handlesubmit}>
-                <div className="flex flex-col "> 
+                <div className="flex flex-col ">
                   <div
                     className="text-8xl text-white text-center mb-5 items-center mt-10"
                     style={{ fontFamily: "Starborn" }}
@@ -160,14 +192,16 @@ export default function Register() {
                   </div>
                   <div className="flex flex-col items-center text-left  mx-16">
                     <div className="text-white mt-0 lg:w-[400px] lg:h-[35px] w-[300px] h-[35px]">
-                      <div className="text-5xl text-left">Sign up</div>
+                      <div className="text-5xl text-left" disabled={loading}>
+                      {loading ? 'Loading...' : 'Sign up'}
+                      </div>
                       <p className="text-3xl mt-3 text-left">
                         Sign up with email address
                       </p>
                     </div>
                     <div className="">
                       <div className="input_group flex flex-col items-center mt-20">
-                        <div className=" justify-center w-[120px] h-[120px] rounded-full bg-[#343434] items-center">
+                        <div className="relative justify-center w-[120px] h-[120px] rounded-full bg-[#343434] items-center">
                           <div
                             alt=""
                             className="flex flex-col justify-center items-center cursor-pointer"
@@ -187,30 +221,85 @@ export default function Register() {
                               />
                             </svg>
 
-                            <div
-                              className="text-white text-xl mt-1"
-                              // style={
-                              //   showImg.img1
-                              //     ? { backgroundImage: `url(${showImg.img1})` }
-                              //     : null
-                              // }
-                            >Upload image</div>                   
+                            <div className="text-white text-xl mt-1">
+                              Upload image
+                            </div>
+                            {/* <input
+                              type="file"
+                              accept="image/*"
+                              className="absolute z-0 opacity-0 cursor-pointer w-[120px] h-[120px] rounded-full "
+                              onClick={handleImage}
+                            ></input> */}
                           </div>
                         </div>
                         {showmodal ? (
                           <>
-                          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                            <div className="relative lg:w-[1000px] h-[600px] mt-60 max-w-3xl">
-                              <div className="border-0 w-[672px] h-[303px] rounded-lg shadow-lg relative bg-[#323232] outline-none focus:outline-none">
-                                <div className="relative p-6 flex-auto">
-                                  <div className="flex flex-auto relative ">
-                                    <p></p>
-                                    <div></div>
+                            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                              <div className="relative lg:w-[1000px] h-[600px] mt-60 max-w-3xl">
+                                <div className="border-0 w-[672px] h-[587px] rounded-lg shadow-lg relative bg-[#323232] outline-none focus:outline-none">
+                                  <div className="relative p-6 flex-auto">
+                                    <div className="flex flex-auto relative ">
+                                      <p className=" text-center text-white slab text-3xl leading-relaxed header_profile">
+                                        Upload image
+                                      </p>
+                                      <div className="absolute top-0 right-0 cursor-pointer pr-2 pt-2">
+                                        <IoCloseCircle
+                                          onClick={() => closeModals()}
+                                          className="text-5xl text-white"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="self-start w-full gap-6">
+                                      <h2 className="font-sans font-bold text-3xl flex items-center text-white">
+                                        <img src={goodPhoto} alt="" /> Good
+                                        Photo
+                                      </h2>
+                                      <p className="font-sans text-3xl font-medium text-white">
+                                        Close-up selfies, same subject, variety
+                                        of background, expressions and face
+                                        angles
+                                      </p>
+                                      <div className="flex h-[100px] mt-6 gap-2 w-full items-stretch">
+                                        <div className="flex-1 bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                      </div>
+                                    </div>
+                                    <div className="self-start w-full gap-6">
+                                      <h2 className="font-sans font-bold  text-3xl flex items-center text-white">
+                                        <img src={badPhoto} alt="" /> Bad Photo
+                                      </h2>
+                                      <p className="font-sans text-3xl font-medium text-white">
+                                        Group pics, face small or not visible,
+                                        sunglass, animal
+                                      </p>
+                                      <div className="flex h-[100px] gap-2 w-full mt-6 items-stretch">
+                                        <div className="flex-1 bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                        <div className="flex-1  bg-white rounded"></div>
+                                      </div>
+                                    </div>
+                                    <div className=" w-full mt-20 ml-60 items-center relative justify-items-center">
+                                      <div className="bg-[#1DB954] btn shadow-gray-500 rounded-lg w-1/2 p-4 text-white">
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          className=" z-0 opacity-0 absolute cursor-pointer inset-0 w-[321px]"
+                                          onChange={handleImage}                                         
+                                        ></input>
+                                        <span className="z-10 relative">
+                                          Upload image
+                                        </span>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
                           </>
                         ) : null}
                         <div className="border_input ">
@@ -285,7 +374,10 @@ export default function Register() {
                           <span className="text-3xl text-white">
                             Remember me
                           </span>
-                          <b className="text-xl text-green-400 mb-3 ml-auto cursor-pointer" onClick={forgot}>
+                          <b
+                            className="text-xl text-green-400 mb-3 ml-auto cursor-pointer"
+                            onClick={forgot}
+                          >
                             Forgot password?
                           </b>
                         </div>

@@ -37,7 +37,8 @@ export default function ForgotPassword() {
       ) {
         toast.success(response.data.message);
         isLoading(false);
-        navigate("/reset");
+        // navigate("/reset");
+        navigate("/login");
       }
     } catch (error) {
       console.log("sda", error);

@@ -1,31 +1,38 @@
+import axios from 'axios'
+import React, { useEffect } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import 'slick-carousel/slick/slick-theme.css'
+import 'slick-carousel/slick/slick.css'
 import './App.scss'
 import './container/tailwincss.css'
-import { Route, Routes, useNavigate } from 'react-router-dom'
-import React, { useEffect } from 'react'
-import Historyv2 from './ver2/page/Historyv2'
-import Home from './ver2/page/Home'
-import NewHistory from './ver2/components/NewHistory'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
-import Register from './ver2/page/Register'
-import Login from './ver2/page/Login'
+import YoutubeScandal from './ver2/YoutubeScandal'
+import EventResults from './ver2/components/EventResults'
+import NotFound from './ver2/components/NotFound'
+import OnBoard from './ver2/components/OnBoard'
+import Policy from './ver2/components/Policy'
 import Profile from './ver2/components/Profile'
+import ProfileGuest from './ver2/components/ProfileGuest'
+
+import Home from './ver2/page/Home/Home'
+import Love from './ver2/page/Love/Love'
+import NewHistory from './ver2/page/Love/NewHistory/NewHistory'
+
+import DetailVideo from './ver2/page/Videos/DetailVideo/DetailVideo'
+import MakeVideo from './ver2/page/Videos/MakeVideo/MakeVideo'
+import MyVideos from './ver2/page/Videos/MyVideo/MyVideo'
+import Video from './ver2/page/Videos/Videos'
+
 import './ver2/css/index.css'
 import LayoutGuest from './ver2/layouts/LayoutGuest'
 import LayoutUser from './ver2/layouts/LayoutUser'
-import NotFound from './ver2/components/NotFound'
-import ProfileGuest from './ver2/components/ProfileGuest'
-import axios from 'axios'
-import EventResults from './ver2/components/EventResults'
+
+// import Home from './ver2/page/Home'
+import Login from './ver2/page/Login'
+import Register from './ver2/page/Register'
+import ForgotPassword from './ver2/page/Forgotpassword'
 import TiktokScandal from './ver2/tiktok-scandal'
-import YoutubeScandal from './ver2/YoutubeScandal'
-import Policy from './ver2/components/Policy'
-import Video from './ver2/components/Videos/Video'
-import ListVideo from './ver2/components/Videos/ListVideo'
-import MakeVideo from './ver2/components/Videos/MakeVideo'
-import DetailVideo from './ver2/components/DetailVideo'
-import NewHome from './ver2/components/NewHome'
-import OnBoard from './ver2/components/OnBoard'
+import ChangePassword from './ver2/components/ChangePassword'
+
 
 function App() {
   const user = window.localStorage.getItem('user-info')
@@ -39,10 +46,8 @@ function App() {
         return null
       }
     }
-
     getIPAddress()
   }, [])
-
   if (!user)
     return (
       <Routes>
@@ -50,6 +55,8 @@ function App() {
           <Route index element={<OnBoard />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="forgot" element={<ForgotPassword />} />
+          <Route path="reset" element={<ChangePassword />} />
           <Route path="policy" element={<Policy />} />
         </Route>
         <Route path="youtube/:idVideo" element={<YoutubeScandal />} />
@@ -61,21 +68,25 @@ function App() {
   return (
     <Routes>
       <Route path="" element={<LayoutUser />}>
-        <Route index element={<Historyv2 />} />
-        <Route path="detailVideo/:id" element={<DetailVideo />} />
-        <Route path="home" element={<NewHome />} />
-        <Route path="event/:id" element={<Historyv2 />} />
-        <Route path="love" element={<Home />} />
+        <Route index element={<Home />} />
+
+        <Route path="event/:id" element={<Home />} />
+
+        <Route path="love" element={<Love />} />
         <Route path="detail/:id/:stt" element={<NewHistory />}></Route>
         <Route path="viewEvent" element={<EventResults />} />
-        <Route path="video" element={<Video />} />
-        <Route path="listvideo" element={<ListVideo />} />
+
+        <Route path="videos" element={<Video />} />
         <Route path="make-video" element={<MakeVideo />} />
+        <Route path="my-video" element={<MyVideos />} />
+        <Route path="detailVideo/:id" element={<DetailVideo />} />
+
         <Route path="login" element={<Login />} />
         <Route path="profile" element={<Profile />} />
         <Route path="policy" element={<Policy />} />
         <Route path="user/:id" element={<ProfileGuest />} />
       </Route>
+
       <Route path="tiktok/:idVideo" element={<TiktokScandal />} />
       <Route path="youtube/:idVideo" element={<YoutubeScandal />} />
       <Route path="*" exact={true} element={<NotFound />} />
